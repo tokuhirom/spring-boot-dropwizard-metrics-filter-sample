@@ -15,10 +15,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -26,7 +23,7 @@ import java.util.regex.Pattern;
  * Aggregate request time histogram.
  */
 @Order(Ordered.HIGHEST_PRECEDENCE)
-public class RichMetricsFilter extends OncePerRequestFilter {
+class RichMetricsFilter extends OncePerRequestFilter {
     private CounterService counterService;
     private final GaugeService gaugeService;
     private final List<String> recordingPatterns;
@@ -55,9 +52,9 @@ public class RichMetricsFilter extends OncePerRequestFilter {
     
     private static final Log logger = LogFactory.getLog(RichMetricsFilter.class);
 
-    public RichMetricsFilter(CounterService counterService, GaugeService gaugeService) {
-        this.counterService = counterService;
-        this.gaugeService = gaugeService;
+    RichMetricsFilter(CounterService counterService, GaugeService gaugeService) {
+        this.counterService = Objects.requireNonNull(counterService);
+        this.gaugeService = Objects.requireNonNull(gaugeService);
         this.recordingPatterns = Arrays.asList();
     }
 
@@ -77,9 +74,9 @@ public class RichMetricsFilter extends OncePerRequestFilter {
                 Long contentLength = getContentLength(response);
                 int status = response.getStatus();
 
-                counterService.increment("status." + status);
+                counterService.increment("metrics.status." + status);
                 if (pattern != null) {
-                    counterService.increment("status." + status + "." + pattern);
+                    counterService.increment("metrics.status." + status + "." + pattern);
                 }
 
                 gaugeService.submit("histogram.request.elapsed", elapsed);

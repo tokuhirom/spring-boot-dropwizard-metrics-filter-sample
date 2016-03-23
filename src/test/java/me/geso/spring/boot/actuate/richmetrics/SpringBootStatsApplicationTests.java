@@ -34,12 +34,13 @@ public class SpringBootStatsApplicationTests {
     public void contextLoads() throws Exception {
 
         mockMvc.perform(get("/hello/1"))
+                .andDo(print())
                 .andExpect(status().is2xxSuccessful());
 
         mockMvc.perform(get("/metrics"))
                 .andDo(print())
                 .andExpect(status().is2xxSuccessful())
-                .andExpect(jsonPath("$.counter.status.200", is(200)));
+                .andExpect(jsonPath("$.metrics.status.200", is(200)));
     }
 
 }
