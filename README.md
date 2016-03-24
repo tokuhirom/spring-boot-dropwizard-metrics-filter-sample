@@ -83,8 +83,30 @@ You can set the properties like this for special paths:
 
 Then, RichMetricsFilter take metrics about requests for `/hello/*`.
 
-## Why don't you use MetricsFilter?
+## FAQ
+
+### Why don't you use MetricsFilter?
+
 MetricsFilter don't provide metrics data such as above.
+
+### Is Dropwizard's metrics fast enough?
+
+Yes. It's really fast.
+
+```
+Score:
+
+benchHistogram:  1 wallclock secs ( 1.12 usr +  0.08 sys =  1.20 CPU) @ 3801478.48/s (n=4573152)
+benchTimer:  1 wallclock secs ( 1.02 usr +  0.01 sys =  1.03 CPU) @ 3164606.01/s (n=3264693)
+benchMetrics:  1 wallclock secs ( 1.15 usr +  0.04 sys =  1.19 CPU) @ 25211790.53/s (n=30020990)
+
+Comparison chart:
+
+                        Rate  benchHistogram  benchTimer  benchMetrics
+  benchHistogram   3801478/s              --         20%          -85%
+      benchTimer   3164606/s            -17%          --          -87%
+    benchMetrics  25211791/s            563%        697%            --
+```
 
 ## LICENSE
 

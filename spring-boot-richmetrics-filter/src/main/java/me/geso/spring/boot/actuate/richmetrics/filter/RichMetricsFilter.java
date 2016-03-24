@@ -22,6 +22,7 @@ import java.util.Objects;
 
 /**
  * Aggregate request time histogram.
+ * See https://github.com/dropwizard/metrics/tree/master/metrics-servlet.
  */
 @Order(Ordered.HIGHEST_PRECEDENCE)
 class RichMetricsFilter extends OncePerRequestFilter {
