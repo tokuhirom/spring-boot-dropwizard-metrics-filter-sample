@@ -1,4 +1,4 @@
-package me.geso.spring.boot.actuate.richmetrics.controller;
+package com.example.controller;
 
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,7 +13,7 @@ public class RootController {
 
     @RequestMapping("/hello/{id}")
     public String hello2(@PathVariable("id") long id) throws InterruptedException {
-        Thread.currentThread().sleep(id);
+        Thread.sleep(id);
         return "Hello " + id;
     }
 }

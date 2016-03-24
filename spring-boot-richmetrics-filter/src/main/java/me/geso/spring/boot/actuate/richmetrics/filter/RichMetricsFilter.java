@@ -15,47 +15,28 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * Aggregate request time histogram.
  */
 @Order(Ordered.HIGHEST_PRECEDENCE)
 class RichMetricsFilter extends OncePerRequestFilter {
-    private CounterService counterService;
+    private final CounterService counterService;
     private final GaugeService gaugeService;
-    private final List<String> recordingPatterns;
+    private final Map<String, String> recordingPatterns;
     private final AntPathMatcher antPathMatcher = new AntPathMatcher();
 
-    private static final List<PatternReplacer> STATUS_REPLACERS;
-
-    static {
-        List<PatternReplacer> replacements = new ArrayList<>();
-        replacements.add(new PatternReplacer("[{}]", 0, "-"));
-        replacements.add(new PatternReplacer("**", Pattern.LITERAL, "-star-star-"));
-        replacements.add(new PatternReplacer("*", Pattern.LITERAL, "-star-"));
-        replacements.add(new PatternReplacer("/-", Pattern.LITERAL, "/"));
-        replacements.add(new PatternReplacer("-/", Pattern.LITERAL, "/"));
-        STATUS_REPLACERS = Collections.unmodifiableList(replacements);
-    }
-
-    private static final List<PatternReplacer> KEY_REPLACERS;
-
-    static {
-        List<PatternReplacer> replacements = new ArrayList<PatternReplacer>();
-        replacements.add(new PatternReplacer("/", Pattern.LITERAL, "."));
-        replacements.add(new PatternReplacer("src/main", Pattern.LITERAL, "."));
-        KEY_REPLACERS = replacements;
-    }
-    
     private static final Log logger = LogFactory.getLog(RichMetricsFilter.class);
 
-    RichMetricsFilter(CounterService counterService, GaugeService gaugeService) {
+    RichMetricsFilter(CounterService counterService, GaugeService gaugeService, Map<String, String> recordingPatterns) {
         this.counterService = Objects.requireNonNull(counterService);
         this.gaugeService = Objects.requireNonNull(gaugeService);
-        this.recordingPatterns = Arrays.asList();
+        // Always process the recording patterns in same order.
+        this.recordingPatterns = Collections.unmodifiableMap(new LinkedHashMap<String, String>(recordingPatterns));
     }
 
 
@@ -74,9 +55,9 @@ class RichMetricsFilter extends OncePerRequestFilter {
                 Long contentLength = getContentLength(response);
                 int status = response.getStatus();
 
-                counterService.increment("metrics.status." + status);
+                counterService.increment("meter.status." + status);
                 if (pattern != null) {
-                    counterService.increment("metrics.status." + status + "." + pattern);
+                    counterService.increment("meter.status." + status + "." + pattern);
                 }
 
                 gaugeService.submit("histogram.request.elapsed", elapsed);
@@ -111,58 +92,13 @@ class RichMetricsFilter extends OncePerRequestFilter {
                 .getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
         if (bestMatchingPattern != null) {
             String path = bestMatchingPattern.toString();
-            for (String recordingPattern : recordingPatterns) {
-                if (antPathMatcher.match(recordingPattern, path)) {
-                    return getKey(fixSpecialCharacters(recordingPattern));
+            for (Map.Entry<String, String> entry : recordingPatterns.entrySet()) {
+                if (antPathMatcher.match(entry.getValue(), path)) {
+                    return entry.getKey();
                 }
             }
         }
         return null;
-    }
-
-    private String getKey(String string) {
-        // graphite compatible metric names
-        String key = string;
-        for (PatternReplacer replacer : KEY_REPLACERS) {
-            key = replacer.apply(key);
-        }
-        if (key.endsWith(".")) {
-            key = key + "root";
-        }
-        if (key.startsWith("_")) {
-            key = key.substring(1);
-        }
-        return key;
-    }
-
-    private String fixSpecialCharacters(String value) {
-        String result = value;
-        for (PatternReplacer replacer : STATUS_REPLACERS) {
-            result = replacer.apply(result);
-        }
-        if (result.endsWith("-")) {
-            result = result.substring(0, result.length() - 1);
-        }
-        if (result.startsWith("-")) {
-            result = result.substring(1);
-        }
-        return result;
-    }
-
-    private static class PatternReplacer {
-        private final Pattern pattern;
-
-        private final String replacement;
-
-        PatternReplacer(String regex, int flags, String replacement) {
-            this.pattern = Pattern.compile(regex, flags);
-            this.replacement = replacement;
-        }
-
-        String apply(String input) {
-            return this.pattern.matcher(input)
-                    .replaceAll(Matcher.quoteReplacement(this.replacement));
-        }
     }
 
 }

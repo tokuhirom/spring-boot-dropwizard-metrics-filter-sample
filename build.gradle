@@ -7,8 +7,6 @@ buildscript {
     }
 }
 
-apply plugin: 'spring-boot'
-apply plugin: 'java'
 apply plugin: 'idea'
 
 group = 'me.geso'
@@ -16,21 +14,43 @@ version = '0.0.1-SNAPSHOT'
 
 description = """spring-boot-rich-metrics-filter"""
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+allprojects {
+    apply plugin: 'maven'
+    apply plugin: 'java'
 
-repositories {
-    mavenCentral()
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    repositories {
+        mavenCentral()
+    }
 }
 
-dependencies {
-    compile 'io.dropwizard.metrics:metrics-core:3.1.2'
-    compile 'org.springframework.boot:spring-boot-starter-web'
-    compile 'org.springframework.boot:spring-boot-starter-actuator'
+project(':spring-boot-richmetrics-filter') {
+    apply plugin: 'spring-boot'
 
-    testCompile('org.springframework.boot:spring-boot-starter-test') {
-        exclude(module: 'commons-logging')
+    bootRepackage {
+        enabled=false
     }
-    testCompile 'com.jayway.jsonpath:json-path:0.8.1'
-    testCompile 'com.jayway.jsonpath:json-path-assert:0.8.1'
+
+    dependencies {
+        compile 'io.dropwizard.metrics:metrics-core:3.1.2'
+        compile 'org.springframework.boot:spring-boot-starter-web'
+        compile 'org.springframework.boot:spring-boot-starter-actuator'
+    }
+}
+
+project(':sample') {
+    apply plugin: 'spring-boot'
+
+  dependencies {
+      compile project(':spring-boot-richmetrics-filter')
+
+      testCompile('org.springframework.boot:spring-boot-starter-test') {
+          exclude(module: 'commons-logging')
+      }
+      testCompile 'com.jayway.jsonpath:json-path:0.8.1'
+      testCompile 'com.jayway.jsonpath:json-path-assert:0.8.1'
+      testCompile('org.assertj:assertj-core:3.2.0')
+  }
 }
