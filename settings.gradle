@@ -1,8 +1,5 @@
 rootProject.name = 'spring-boot-richmetrics-filter'
 
 include 'sample'
-include 'spring-boot-richmetrics-filter'
 
 project(':sample').projectDir = "$rootDir/sample" as File
-project(':spring-boot-richmetrics-filter').projectDir = "$rootDir/spring-boot-richmetrics-filter" as File
-

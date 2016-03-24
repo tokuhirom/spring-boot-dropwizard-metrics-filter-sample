@@ -26,25 +26,14 @@ allprojects {
     }
 }
 
-project(':spring-boot-richmetrics-filter') {
-    apply plugin: 'spring-boot'
-
-    bootRepackage {
-        enabled=false
-    }
-
-    dependencies {
-        compile 'io.dropwizard.metrics:metrics-core:3.1.2'
-        compile 'org.springframework.boot:spring-boot-starter-web'
-        compile 'org.springframework.boot:spring-boot-starter-actuator'
-    }
-}
-
 project(':sample') {
     apply plugin: 'spring-boot'
 
   dependencies {
-      compile project(':spring-boot-richmetrics-filter')
+      compile 'io.dropwizard.metrics:metrics-core:3.1.2'
+      compile 'io.dropwizard.metrics:metrics-servlet:3.1.2'
+      compile 'org.springframework.boot:spring-boot-starter-web'
+      compile 'org.springframework.boot:spring-boot-starter-actuator'
 
       testCompile('org.springframework.boot:spring-boot-starter-test') {
           exclude(module: 'commons-logging')
