@@ -75,6 +75,14 @@ spring-boot-richmetrics-filter provides servlet filter to get following metrics 
 }
 ```
 
+## Configuration
+
+You can set the properties like this for special paths:
+
+    richmetrics.patterns.hello_id=/hello/*
+
+Then, RichMetricsFilter take metrics about requests for `/hello/*`.
+
 ## Why don't you use MetricsFilter?
 MetricsFilter don't provide metrics data such as above.
 
