@@ -38,7 +38,8 @@ public class SpringBootStatsApplicationTests {
         assertThat(entity.getBody())
                 .containsKeys("histogram.request.content_length.snapshot.min",
                         "meter.status.200.count",
-                        "meter.status.200.meanRate");
+                        "meter.status.200.meanRate",
+                        "histogram.request.elapsed.hello_id.snapshot.median");
         System.out.println(entity.getBody());
     }
 
