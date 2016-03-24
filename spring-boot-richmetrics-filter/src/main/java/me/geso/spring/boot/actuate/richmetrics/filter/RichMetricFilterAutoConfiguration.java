@@ -32,10 +32,6 @@ public class RichMetricFilterAutoConfiguration {
     @Autowired
     private RichMetricsProperties richMetricsProperties;
 
-    public RichMetricFilterAutoConfiguration() {
-        System.out.println("hello");
-    }
-
     @Bean
     public RichMetricsFilter richMetricsFilter() {
         System.out.println(richMetricsProperties);

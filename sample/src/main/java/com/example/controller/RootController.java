@@ -13,7 +13,7 @@ public class RootController {
 
     @RequestMapping("/hello/{id}")
     public String hello2(@PathVariable("id") long id) throws InterruptedException {
-        Thread.currentThread().sleep(id);
+        Thread.sleep(id);
         return "Hello " + id;
     }
 }
