@@ -40,7 +40,6 @@ public class SpringBootStatsApplicationTests {
                         "meter.status.200.count",
                         "meter.status.200.meanRate",
                         "histogram.request.elapsed.hello_id.snapshot.median");
-        System.out.println(entity.getBody());
     }
 
     public static class SSHash extends HashMap<String, String> {

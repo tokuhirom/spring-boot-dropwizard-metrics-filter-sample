@@ -34,7 +34,6 @@ public class RichMetricFilterAutoConfiguration {
 
     @Bean
     public RichMetricsFilter richMetricsFilter() {
-        System.out.println(richMetricsProperties);
         return new RichMetricsFilter(counterService, gaugeService, richMetricsProperties.getPatterns());
     }
 }
