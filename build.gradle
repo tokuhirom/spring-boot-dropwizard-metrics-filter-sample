@@ -37,13 +37,6 @@ project(':spring-boot-richmetrics-filter') {
         compile 'io.dropwizard.metrics:metrics-core:3.1.2'
         compile 'org.springframework.boot:spring-boot-starter-web'
         compile 'org.springframework.boot:spring-boot-starter-actuator'
-
-        testCompile('org.springframework.boot:spring-boot-starter-test') {
-            exclude(module: 'commons-logging')
-        }
-        testCompile 'com.jayway.jsonpath:json-path:0.8.1'
-        testCompile 'com.jayway.jsonpath:json-path-assert:0.8.1'
-        testCompile('org.assertj:assertj-core:3.2.0')
     }
 }
 
