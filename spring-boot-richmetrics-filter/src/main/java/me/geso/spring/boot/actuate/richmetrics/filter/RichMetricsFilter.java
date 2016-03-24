@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
  */
 @Order(Ordered.HIGHEST_PRECEDENCE)
 class RichMetricsFilter extends OncePerRequestFilter {
-    private CounterService counterService;
+    private final CounterService counterService;
     private final GaugeService gaugeService;
     private final List<String> recordingPatterns;
     private final AntPathMatcher antPathMatcher = new AntPathMatcher();
@@ -52,7 +52,7 @@ class RichMetricsFilter extends OncePerRequestFilter {
     
     private static final Log logger = LogFactory.getLog(RichMetricsFilter.class);
 
-    RichMetricsFilter(CounterService counterService, GaugeService gaugeService) {
+    RichMetricsFilter(CounterService counterService, GaugeService gaugeService, Map<String, String> richMetricsProperties) {
         this.counterService = Objects.requireNonNull(counterService);
         this.gaugeService = Objects.requireNonNull(gaugeService);
         this.recordingPatterns = Arrays.asList();
@@ -74,9 +74,9 @@ class RichMetricsFilter extends OncePerRequestFilter {
                 Long contentLength = getContentLength(response);
                 int status = response.getStatus();
 
-                counterService.increment("metrics.status." + status);
+                counterService.increment("meter.status." + status);
                 if (pattern != null) {
-                    counterService.increment("metrics.status." + status + "." + pattern);
+                    counterService.increment("meter.status." + status + "." + pattern);
                 }
 
                 gaugeService.submit("histogram.request.elapsed", elapsed);

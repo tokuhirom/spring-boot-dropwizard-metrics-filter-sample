@@ -7,7 +7,7 @@ import java.util.Map;
 
 @Component
 @ConfigurationProperties(prefix = "richmetrics")
-public class RichMetricsProperties {
+class RichMetricsProperties {
     private Map<String, String> patterns;
 
     public Map<String, String> getPatterns() {
